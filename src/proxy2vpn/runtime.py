@@ -8,6 +8,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 import subprocess
+import signal
 import sys
 import time
 import psutil
@@ -68,6 +69,11 @@ async def serve(home, assets):
         child = None
         reap = None
         awake = None
+        loop = asyncio.get_running_loop()
+        if sys.platform != "win32":
+            # launchd sends SIGTERM on bootout. Request a graceful stop so the
+            # owned QEMU child does not survive and retain the backend UDP port.
+            loop.add_signal_handler(signal.SIGTERM, stop.touch)
         try:
             # Bind first: fail without starting a VM if another gateway owns this LAN port.
             gateway = await relay.start(cfg)
@@ -104,6 +110,8 @@ async def serve(home, assets):
                     last_health = time.monotonic()
                 await asyncio.sleep(1)
         finally:
+            if sys.platform != "win32":
+                loop.remove_signal_handler(signal.SIGTERM)
             if reap:
                 reap.cancel()
                 await asyncio.gather(reap, return_exceptions=True)
