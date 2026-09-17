@@ -20,4 +20,5 @@
 使用 TCP 上游的检查。测试入口使用独立端口，不改用户路由器。
 
 复现方法见 [CONTRIBUTING.md](../CONTRIBUTING.md)。私人测试状态与日志不纳入仓库。
-CI 配置覆盖 Windows/macOS/Linux 的 Python 测试；CI 运行结果以实际 Actions 为准。
+CI 配置覆盖 Windows/macOS/Linux 的 Python 测试；首版云端任务未能启动，尚无云端通过证据。
+本页已通过结果均为本地执行，后续 CI 运行结果以实际 Actions 为准。
