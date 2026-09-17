@@ -1,0 +1,22 @@
+#!/bin/sh
+# Stateless PID 1: all credentials arrive in a host-private initramfs overlay.
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+mkdir -p /proc /sys /dev /run /tmp /var/log
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+mkdir -p /dev/pts /dev/net /run/xl2tpd
+mount -t devpts devpts /dev/pts
+exec </dev/console >/dev/console 2>&1
+echo 'Proxy2VPN guest starting'
+for module in virtio_pci virtio_net ppp_generic ppp_async tun; do modprobe "$module"; done
+ip link set lo up
+ip address add 127.0.0.1/8 dev lo 2>/dev/null || true
+ip link set eth0 up
+if ! udhcpc -i eth0 -q -n -t 10; then echo 'P2V_ERROR DHCP failed'; poweroff -f; fi
+if [ ! -f /etc/proxy2vpn.env ]; then echo 'P2V_ERROR Missing configuration'; poweroff -f; fi
+while :; do
+    /usr/local/sbin/proxy2vpn-bridge
+    echo 'P2V_ERROR Core exited; restarting in 3 seconds'
+    sleep 3
+done
