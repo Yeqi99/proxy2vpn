@@ -1,14 +1,32 @@
 # Proxy2VPN
 
-[English](README.en.md) · [下载安装包](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.1)
+[English](README.en.md) · [下载安装包](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.2)
 
 **把家里电脑上的代理，变成路由器和浏览器都能使用的接入口。**
 
 下载对应系统的安装包，解压后双击安装。安装器会准备运行环境、启动本地网页控制台，并设置当前用户登录后自启。无需自行安装 Python、Docker 或手动构建镜像。首次安装需要联网下载依赖。
 
-## 三步开始
+## 一条指令安装
 
-1. Windows x64：解压 `proxy2vpn-0.2.1-windows-x64.zip`，双击 `Install-Windows.cmd`。Apple Silicon Mac 使用 `macos-arm64.zip`，Intel Mac 使用 `macos-intel.zip`，打开其中 `Install-Mac.command`。
+Windows x64：打开 **PowerShell**，复制执行：
+
+```powershell
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.2/install.ps1')))
+```
+
+Mac：打开 **终端**，复制执行（自动识别 Apple Silicon / Intel）：
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.2/install.sh)"
+```
+
+自动下载并校验安装包、部署依赖、创建快捷方式，完成后直接打开本地 UI。首次安装默认登录自启，已有安装保留用户选择。第一次仍需在网页填写自己的代理地址。
+
+安装过程需要访问 GitHub、Python 软件源和平台依赖源。Mac 首次安装 Homebrew / Command Line Tools 可能要求密码或系统确认；Mac 真机仍待验证。无需手动安装 Docker。
+
+## 下载后安装
+
+1. Windows x64：解压 `proxy2vpn-0.2.2-windows-x64.zip`，双击 `Install-Windows.cmd`。Apple Silicon Mac 使用 `macos-arm64.zip`，Intel Mac 使用 `macos-intel.zip`，打开其中 `Install-Mac.command`。
 2. 自动打开的控制台位于 `http://127.0.0.1:18990/`。填写电脑内网 IP、路由器 IP、已有 HTTP/SOCKS5 代理地址和端口，选择接入口，点击「保存并启动」。
 3. 按网页教程配置路由器或浏览器。路由器按设备分流时，排除运行代理的电脑，避免循环。
 

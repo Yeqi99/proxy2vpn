@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2
+
+- Add version-pinned, checksum-verifying one-command Windows/macOS bootstraps.
+- Ship the compact light blue console with persistent Chinese/English selection.
+- Test current proxy inputs without changing saved settings; show localized progress and results.
+- Prevent Windows proxy diagnostics from opening a console window.
+
+
 ## 0.2.1
 
 - Create Windows desktop/Start menu shortcuts and a Mac desktop launcher.

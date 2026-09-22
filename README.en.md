@@ -1,10 +1,30 @@
 # Proxy2VPN
 
-[中文](README.md) · [Download installers](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.1)
+[中文](README.md) · [Download installers](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.2)
 
 Share an existing HTTP CONNECT or SOCKS5 proxy through a router VPN or an authenticated application proxy. Your computer and upstream proxy must stay running.
 
-## Quick start
+## One-command installation
+
+Windows x64 — run in PowerShell:
+
+```powershell
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.2/install.ps1')))
+```
+
+macOS — run in Terminal (Apple Silicon / Intel selected automatically):
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.2/install.sh)"
+```
+
+The bootstrap downloads and verifies the platform package, installs dependencies,
+creates launchers and opens the local UI. Enter your own upstream proxy on first
+use. New installs default to login startup; upgrades retain your preference.
+Internet access is required. macOS may request a password or Command Line Tools
+confirmation. Real Mac validation is still pending.
+
+## Download and install
 
 1. Extract the Windows x64, Apple Silicon macOS, or Intel macOS ZIP. Open `Install-Windows.cmd` or `Install-Mac.command`.
 2. The installer prepares Python/QEMU, opens `http://127.0.0.1:18990/`, and enables current-user login startup. No Docker or manual guest build is needed. Installation requires internet access.
