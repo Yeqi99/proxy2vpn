@@ -5,10 +5,21 @@ import plistlib
 import subprocess
 import sys
 import socket
+import json
+
+
+def preference(home, installed=False):
+    """New installs default on; upgrades retain the user's choice."""
+    path = Path(home) / 'startup.json'
+    if path.exists():
+        value = json.loads(path.read_text())['enabled']
+        if type(value) is not bool: raise ValueError('Invalid startup preference')
+        return value
+    return enabled() if installed else True
 
 
 def arguments(home, assets, port):
-    python = Path(sys.executable)
+    python = Path(sys.executable).resolve()
     if sys.platform == 'win32' and python.with_name('pythonw.exe').exists(): python = python.with_name('pythonw.exe')
     return [str(python), '-m', 'proxy2vpn', '--home', str(home), 'console', '--assets', str(assets), '--port', str(port)]
 
@@ -59,3 +70,5 @@ def configure(enable, home, assets, port):
             # Disable future login startup without terminating the current console.
             # The loaded user job expires at logout.
     else: raise ValueError('Login startup is implemented for Windows and macOS')
+    from .runtime import atomic_json
+    atomic_json(Path(home) / 'startup.json', {'enabled': bool(enable)})

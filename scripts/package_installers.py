@@ -7,7 +7,7 @@ import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'dist'
-VERSION='0.2.0'
+VERSION='0.2.1'
 
 
 def main():
@@ -15,7 +15,7 @@ def main():
         raise SystemExit('Build the corresponding source companion before packaging guest binaries')
     wheel=OUT/f'proxy2vpn-{VERSION}-py3-none-any.whl'
     for platform,arch in [('windows-x64','x86_64'),('macos-arm64','aarch64'),('macos-intel','x86_64')]:
-        stage=ROOT/'build'/('installer-'+platform)
+        stage=ROOT/'build'/('installer-'+VERSION+'-'+platform)
         (stage/'app').mkdir(parents=True,exist_ok=True)
         shutil.copy2(wheel,stage/'app'/wheel.name)
         (stage/'assets').mkdir(exist_ok=True)
@@ -23,7 +23,7 @@ def main():
             shutil.copy2(ROOT/'artifacts'/arch/name,stage/'assets'/name)
         for name in ('LICENSE','THIRD_PARTY_NOTICES.md'):
             shutil.copy2(ROOT/name,stage/name)
-        (stage/'READ-ME-FIRST.txt').write_text('Proxy2VPN 0.2.0\nWindows: double-click Install-Windows.cmd\nmacOS: open Install-Mac.command (right-click Open if macOS requires confirmation).\nThe installer downloads official Python/QEMU dependencies, starts a localhost console, and registers current-user login startup. First-time setup requires entering your existing proxy in the web page. Network access is required during installation. This is not a pre-login system service.\nGuest corresponding source: https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.0\n',encoding='utf-8')
+        (stage/'READ-ME-FIRST.txt').write_text('Proxy2VPN 0.2.1\nWindows: double-click Install-Windows.cmd\nmacOS: open Install-Mac.command (right-click Open if macOS requires confirmation).\nThe installer downloads official Python/QEMU dependencies, starts a localhost console, and registers current-user login startup. First-time setup requires entering your existing proxy in the web page. Network access is required during installation. This is not a pre-login system service.\nGuest corresponding source: https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.1\n',encoding='utf-8')
         if platform.startswith('windows'):
             for name in ('Install-Windows.cmd','Install-Windows.ps1'):shutil.copy2(ROOT/'installer'/name,stage/name)
             (stage/'tools').mkdir(exist_ok=True)

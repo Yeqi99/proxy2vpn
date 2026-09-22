@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+- Create Windows desktop/Start menu shortcuts and a Mac desktop launcher.
+- Start the console on demand from a shortcut, even with login startup disabled.
+- Default new installs to login startup; preserve user choice across upgrades.
+- Show immediate, persistent feedback for the startup toggle in the console.
+
 ## 0.2.0 — 2026-09-22
 
 - Windows installer and macOS Intel/Apple Silicon installer packages.

@@ -1,6 +1,6 @@
 # Proxy2VPN
 
-[English](README.en.md) · [下载安装包](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.0)
+[English](README.en.md) · [下载安装包](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.1)
 
 **把家里电脑上的代理，变成路由器和浏览器都能使用的接入口。**
 
@@ -8,7 +8,7 @@
 
 ## 三步开始
 
-1. Windows x64：解压 `proxy2vpn-0.2.0-windows-x64.zip`，双击 `Install-Windows.cmd`。Apple Silicon Mac 使用 `macos-arm64.zip`，Intel Mac 使用 `macos-intel.zip`，打开其中 `Install-Mac.command`。
+1. Windows x64：解压 `proxy2vpn-0.2.1-windows-x64.zip`，双击 `Install-Windows.cmd`。Apple Silicon Mac 使用 `macos-arm64.zip`，Intel Mac 使用 `macos-intel.zip`，打开其中 `Install-Mac.command`。
 2. 自动打开的控制台位于 `http://127.0.0.1:18990/`。填写电脑内网 IP、路由器 IP、已有 HTTP/SOCKS5 代理地址和端口，选择接入口，点击「保存并启动」。
 3. 按网页教程配置路由器或浏览器。路由器按设备分流时，排除运行代理的电脑，避免循环。
 
@@ -29,7 +29,7 @@ VPN 接入限制来自配置的路由器 IP 和本机诊断地址；HTTP/SOCKS �
 
 ## 安装与平台边界
 
-Windows 下载官方 Python 嵌入式运行时、QEMU，安装到用户目录；7-Zip 仅用于解压。不修改系统默认路由、原代理或已有 Python。控制台只监听本机；Windows 桌面生成打开入口。
+Windows 下载官方 Python 嵌入式运行时、QEMU，安装到用户目录；7-Zip 仅用于解压。不修改系统默认路由、原代理或已有 Python。控制台只监听本机；Windows 自动创建桌面和开始菜单快捷方式；Mac 自动创建桌面 Proxy2VPN.command 入口。后台未运行时，快捷方式会先启动控制台再打开网页。
 
 Mac 通过 Homebrew 准备 Python/QEMU，创建独立环境。**首次安装 Homebrew 或 Command Line Tools 时，macOS 可能要求密码或系统确认**；脚本不会绕过 Gatekeeper。自动启动指当前用户登录自启，不是无人登录的系统服务。
 
@@ -37,9 +37,10 @@ Mac 通过 Homebrew 准备 Python/QEMU，创建独立环境。**首次安装 Hom
 
 ## 控制台与日常使用
 
+- 首次安装默认开启登录自启。管理页顶部可随时切换，立即保存并显示结果；升级和重装会保留关闭选择。关闭自启不停止当前会话，也不影响通过快捷方式手动启动。
 - 网页可设置上游地址、端口、账号、接入协议与端口；启停、测试已保存代理、修改登录自启、显示账号、下载 WireGuard 配置。
 - `~/.proxy2vpn` 保存私人设置，默认限制当前用户访问。状态接口不返回密码或私钥。页面使用本机密钥和 Host/Origin 检查。
-- 首次安装自动登录。直接访问 URL 时按提示输入 `console.token`；Windows 也可使用桌面 `Proxy2VPN.cmd`。
+- 首次安装自动登录。直接访问 URL 时按提示输入 `console.token`；Windows 使用桌面或开始菜单的 `Proxy2VPN` 快捷方式，Mac 使用桌面的 `Proxy2VPN.command`。
 - 测试按钮仅验证上游 HTTPS；L2TP 就绪只说明控制握手。目标设备的游戏、商店与速度应实际验证。
 - 需要防火墙放行时只允许目标来源和端口；不要关闭整个防火墙。SOCKS5 UDP 建议填写内网 IP，且原代理允许所需 LAN 访问。
 

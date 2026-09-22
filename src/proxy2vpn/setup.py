@@ -8,10 +8,10 @@ import sys
 import time
 import webbrowser
 import psutil
-from . import autostart, config, runtime, vm
+from . import autostart, config, runtime, vm, shortcuts
 
 
-def main():
+def main(argv=None):
     p=argparse.ArgumentParser()
     p.add_argument('--home',type=Path,default=Path.home()/'.proxy2vpn')
     p.add_argument('--assets',type=Path,required=True)
@@ -20,14 +20,17 @@ def main():
     p.add_argument('--no-autostart',action='store_true')
     p.add_argument('--no-browser',action='store_true')
     p.add_argument('--restart',action='store_true')
-    a=p.parse_args(); home=config.private_dir(a.home); assets=a.assets.resolve()
+    p.add_argument('--launch-only',action='store_true',help='Open/start the console without changing startup preferences')
+    a=p.parse_args(argv); home=config.private_dir(a.home); assets=a.assets.resolve()
+    installed=(home/'installation.json').exists()
+    start_on_login=False if a.no_autostart else autostart.preference(home,installed)
     manifest=vm.verify_assets(assets)
     if not Path(a.qemu).is_file(): raise FileNotFoundError('QEMU missing')
-    runtime.atomic_json(home/'installation.json',{'qemu':str(Path(a.qemu).resolve()),'assets':str(assets),'architecture':manifest['architecture']})
+    runtime.atomic_json(home/'installation.json',{'qemu':str(Path(a.qemu).resolve()),'assets':str(assets),'architecture':manifest['architecture'],'port':a.port})
     # Existing users keep all credentials and proxy settings.
     if (home/'config.json').exists():
         cfg=config.load(home);cfg['qemu']=str(Path(a.qemu).resolve());config.replace(home,cfg)
-    python=Path(sys.executable)
+    python=Path(sys.executable).resolve()
     if sys.platform=='win32' and python.with_name('pythonw.exe').exists():python=python.with_name('pythonw.exe')
     args=[str(python),'-m','proxy2vpn','--home',str(home),'console','--assets',str(assets),'--port',str(a.port)]
     if a.restart and (home/'console-owner.json').exists():
@@ -53,7 +56,7 @@ def main():
         token=(home/'console.token').read_text().strip()
         with urlopen(Request(f'http://127.0.0.1:{a.port}/api/state',headers={'X-P2V-Token':token}),timeout=3) as r:
             if r.status!=200:raise RuntimeError('Console port occupied')
-    elif sys.platform=='darwin' and not a.no_autostart:
+    elif sys.platform=='darwin' and start_on_login and not a.launch_only:
         autostart.configure(True,home,assets,a.port)
     else:
         with (home/'console-launch.log').open('ab') as log:
@@ -63,14 +66,9 @@ def main():
             with socket.create_connection(('127.0.0.1',a.port),timeout=.5): break
         except OSError: time.sleep(.25)
     else: raise RuntimeError('Console did not start; inspect console-launch.log')
-    if not a.no_autostart: autostart.configure(True,home,assets,a.port)
-    # A local shortcut keeps the fragment token out of shell history.
-    opener=home/'open_console.py'
-    opener.write_text('from pathlib import Path\nimport webbrowser\np=Path(__file__).parent\nwebbrowser.open("http://127.0.0.1:'+str(a.port)+'/#"+(p/"console.token").read_text().strip())\n',encoding='utf-8')
-    if sys.platform=='win32':
-        desktop=Path.home()/'Desktop'
-        if desktop.exists():
-            (desktop/'Proxy2VPN.cmd').write_text('@echo off\nchcp 65001 >nul\n'+subprocess.list2cmdline([str(python),str(opener)])+'\n',encoding='utf-8')
+    if not a.launch_only:
+        autostart.configure(start_on_login,home,assets,a.port)
+        shortcuts.create(home)
     if not a.no_browser:webbrowser.open(f'http://127.0.0.1:{a.port}/#'+(home/'console.token').read_text().strip())
     print('Console ready. Enter the upstream proxy in the web page; save to start forwarding.')
 
