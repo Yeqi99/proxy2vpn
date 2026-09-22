@@ -69,6 +69,8 @@ async def serve(home, assets):
         child = None
         reap = None
         awake = None
+        wg_gateway = None
+        wg_reap = None
         loop = asyncio.get_running_loop()
         if sys.platform != "win32":
             # launchd sends SIGTERM on bootout. Request a graceful stop so the
@@ -76,9 +78,13 @@ async def serve(home, assets):
             loop.add_signal_handler(signal.SIGTERM, stop.touch)
         try:
             # Bind first: fail without starting a VM if another gateway owns this LAN port.
-            gateway = await relay.start(cfg)
+            if 'l2tp' in cfg['protocols']:
+                gateway = await relay.start(cfg)
+                reap = asyncio.create_task(gateway.reap())
+            if 'wireguard' in cfg['protocols']:
+                wg_gateway = await relay.start(dict(cfg, listen_port=cfg['wireguard_port'], backend_port=cfg['wireguard_backend_port']))
+                wg_reap = asyncio.create_task(wg_gateway.reap())
             atomic_json(home / "owner.json", {"pid": me.pid, "created": me.create_time()})
-            reap = asyncio.create_task(gateway.reap())
             if sys.platform == "win32":
                 ctypes.windll.kernel32.SetThreadExecutionState(0x80000001)
             elif sys.platform == "darwin":
@@ -100,11 +106,13 @@ async def serve(home, assets):
                 if time.monotonic() - last_health > 15:
                     healthy = False
                     try:
-                        healthy = await asyncio.to_thread(probe, cfg["listen_ip"], cfg["listen_port"], 2)
+                        if 'l2tp' in cfg['protocols']:
+                            healthy = await asyncio.to_thread(probe, cfg["listen_ip"], cfg["listen_port"], 2)
                     except (OSError, ValueError):
                         pass
                     atomic_json(home / "status.json", {"running": True,
                         "l2tp_ready": healthy, "guest_running": child.poll() is None,
+                        "protocols": cfg['protocols'],
                         "updated_at": datetime.datetime.now().astimezone().isoformat(),
                         "note": "Control handshake only; upstream and device usability are separate checks."})
                     last_health = time.monotonic()
@@ -117,6 +125,10 @@ async def serve(home, assets):
                 await asyncio.gather(reap, return_exceptions=True)
             if gateway:
                 await gateway.close()
+            if wg_reap:
+                wg_reap.cancel()
+                await asyncio.gather(wg_reap, return_exceptions=True)
+            if wg_gateway: await wg_gateway.close()
             for proc in (child, awake):
                 if proc and proc.poll() is None:
                     proc.terminate()

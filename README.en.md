@@ -1,68 +1,41 @@
 # Proxy2VPN
 
-[中文说明](README.md)
+[中文](README.md) · [Download installers](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.0)
 
-Share an existing HTTP CONNECT or SOCKS5 proxy on a Windows or macOS computer
-through a router-compatible **plain L2TP** gateway. No router flashing, host
-network bridging, or additional Ethernet cable is required.
-
-```
-Headset / TV / console -> Wi-Fi router -> Proxy2VPN -> your existing proxy
-```
-
-The router must support an L2TP client without mandatory IPsec. Device-based
-routing is recommended: exclude the computer that runs the upstream proxy.
-SOCKS5 can carry TCP and UDP when the upstream supports UDP ASSOCIATE. Ordinary
-HTTP CONNECT carries TCP only; gateway DNS is forwarded using TCP.
-
-## Early release
-
-Windows x64 has passed end-to-end L2TP/PPP, HTTPS, DNS and UDP tests. The ARM64
-guest has passed the same tests under QEMU emulation. Native macOS/HVF and real
-device experience are **not yet verified**. See [validation](docs/validation.md).
-
-Plain L2TP is not encrypted. Use only inside a trusted home LAN and never expose
-its port to the Internet. This tool is not an Internet VPN provider or kill switch.
+Share an existing HTTP CONNECT or SOCKS5 proxy through a router VPN or an authenticated application proxy. Your computer and upstream proxy must stay running.
 
 ## Quick start
 
-Install Python 3.11+ and [QEMU](https://www.qemu.org/download/). Docker Desktop is
-needed only to build the clean guest, not to run the gateway.
+1. Extract the Windows x64, Apple Silicon macOS, or Intel macOS ZIP. Open `Install-Windows.cmd` or `Install-Mac.command`.
+2. The installer prepares Python/QEMU, opens `http://127.0.0.1:18990/`, and enables current-user login startup. No Docker or manual guest build is needed. Installation requires internet access.
+3. Enter the computer LAN IP, router IP and existing proxy address. Select protocols, save and start. Follow the built-in router/browser guide.
 
-```sh
-python -m venv .venv
-# Activate .venv using the command for your shell.
-python -m pip install -e .
-python scripts/build_guest.py --arch x86_64
-# On Apple Silicon, use --arch aarch64 and artifacts/aarch64 below.
-proxy2vpn init --listen-ip 192.168.50.10 --router-ip 192.168.50.1 --proxy-host 192.168.50.10 --proxy-port 7890
-proxy2vpn up --assets artifacts/x86_64
-proxy2vpn status
-proxy2vpn doctor --assets artifacts/x86_64 --network
-proxy2vpn router
-```
+Closing the browser does not stop forwarding. The console supervises the gateway and retries failed processes. Stop is remembered across logins. Login startup is not a pre-login system service.
 
-Replace the example addresses. The last command displays locally generated
-router credentials; configure them in your router's L2TP client. Use
-`--proxy-type http` for HTTP CONNECT or `--proxy-auth` to privately prompt for
-proxy credentials. Configuration is stored in `~/.proxy2vpn/config.json`.
+## Protocols
 
-For SOCKS5 UDP, prefer your computer's LAN address over loopback: some proxy
-applications advertise a loopback UDP relay address that is inaccessible to the
-Linux guest. Configure the existing application to accept the required local
-connections. Proxy2VPN does not read subscriptions or modify the proxy app.
+| Inbound | Default port | Client |
+| --- | --- | --- |
+| Plain L2TP (no IPsec) | UDP 1701 | Compatible stock router firmware, trusted LAN only |
+| WireGuard | UDP 51820 | Compatible router; download its client configuration |
+| HTTP / CONNECT | TCP 18080 | Browser/system proxy, generated credentials required |
+| SOCKS5 | TCP 11080 | Apps supporting username/password authentication; TCP only |
 
-Stop with `proxy2vpn down`. Keep the computer awake and the upstream proxy running.
-If needed, permit UDP 1701 only from your router through the host firewall.
+Multiple inbounds may run together. VPN UDP requires upstream SOCKS5 UDP ASSOCIATE. HTTP upstreams carry TCP only; gateway DNS uses a TCP upstream. IPv6 and a kill switch are not provided. Do not expose ports to the internet. VPN listeners allow the configured router and local diagnostic address; HTTP/SOCKS listeners require authentication.
 
-## Development and licensing
+For browsers, choose HTTP: Chrome/Edge use system proxy settings; Firefox supports manual HTTP proxy settings for HTTP and HTTPS. Browser SOCKS authentication support is limited. Exclude the proxy host from router VPN device routing to avoid loops.
 
-```sh
-python -m unittest discover -s tests -v
-```
+## Platform status
 
-The host controller and original project code are MIT licensed. QEMU, Linux,
-Mihomo and other third-party components retain their own licenses. This release
-distributes source only; build guest assets locally. See
-[third-party notices](THIRD_PARTY_NOTICES.md), [architecture](docs/architecture.md),
-[security](SECURITY.md) and [contributing](CONTRIBUTING.md).
+- Windows x64: clean installation, console, authenticated HTTP/SOCKS, real L2TP/PPP and WireGuard clients tested. Login registration/removal and QEMU crash recovery tested; a full reboot is not yet tested.
+- Apple Silicon / Intel Mac: installers use Homebrew Python/QEMU and a user LaunchAgent. Homebrew/Command Line Tools may require a password or OS confirmation. Real Mac installation, HVF, reboot and sleep recovery remain unverified. ARM64 emulation is not Mac validation.
+
+Private state lives under `~/.proxy2vpn`. The console binds loopback only and requires a local token with Host/Origin validation. The installer opens an authenticated URL; Windows also gets a desktop launcher. Direct visits require the token in `console.token`.
+
+To retire an installation, stop forwarding and disable login startup, disconnect the router VPN, then close the console process and remove the application directory. Keep the private state directory if you need its credentials. Disabling Mac startup takes effect at the next login and keeps the current session running. Shared Homebrew dependencies are not automatically removed.
+
+## Development and licenses
+
+Use Python 3.11+, `python -m pip install -e .` and `python -m unittest discover -s tests -v`. Guest builds require Docker. See [contributing](CONTRIBUTING.md), [architecture](docs/architecture.md), [validation](docs/validation.md), and [security](SECURITY.md).
+
+Original code is MIT licensed. Third-party components retain their licenses. Binary releases include a corresponding-source archive; see [notices](THIRD_PARTY_NOTICES.md).

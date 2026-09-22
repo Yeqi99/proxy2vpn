@@ -7,6 +7,7 @@ import re
 import secrets
 import subprocess
 import sys
+from .protocols import defaults
 
 
 def private_dir(path):
@@ -33,6 +34,14 @@ def new_config(listen, router, proxy_host, proxy_port, kind="socks5"):
 
 
 def validate(cfg):
+    defaults(cfg)
+    if not isinstance(cfg['protocols'], list) or not cfg['protocols'] or any(p not in ('l2tp','wireguard','http','socks5') for p in cfg['protocols']):
+        raise ValueError('Select at least one supported ingress protocol')
+    if len(set(cfg['protocols'])) != len(cfg['protocols']):
+        raise ValueError('Duplicate protocol')
+    ports = [cfg[k] for k in ('listen_port','backend_port','wireguard_port','wireguard_backend_port','http_port','socks_port')]
+    if any(type(p) is not int or not 1024 <= p <= 65535 for p in ports) or len(set(ports)) != len(ports):
+        raise ValueError('Ports must be different integers in 1024..65535')
     for key in ("listen_ip", "router_ip"):
         addr = ipaddress.IPv4Address(cfg[key])
         if not addr.is_private or addr.is_unspecified or addr.is_multicast:
@@ -93,3 +102,13 @@ def save(home, cfg):
         f.write("\n")
     if os.name != "nt":
         path.chmod(0o600)
+
+
+def replace(home, cfg):
+    validate(cfg)
+    home = private_dir(home)
+    target = home / 'config.json'
+    tmp = home / 'config.pending'
+    tmp.write_text(json.dumps(cfg, indent=2), encoding='utf-8')
+    if os.name != 'nt': tmp.chmod(0o600)
+    tmp.replace(target)

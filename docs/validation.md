@@ -1,5 +1,20 @@
 # 验证记录
 
+## 0.2.0 / 2026-09-22
+
+- 本地 28 项测试通过，包括令牌认证、Host/Origin 拦截、状态脱敏、无效配置保护和 WireGuard 私钥导出边界。
+- Windows x64 空目录安装通过：独立嵌入式 Python、自动下载/解压 QEMU、安装 wheel、启动本地控制台。测试未依赖开发环境的 Python 或 QEMU。
+- 安装所得服务的独立 L2TP/PPP 客户端测试：HTTPS、DNS、UDP 通过。
+- WireGuard 独立 Linux 客户端测试：HTTPS、DNS、UDP 通过。
+- ARM64 新镜像在 Windows QEMU TCG 下实测 WireGuard HTTPS、DNS、UDP 通过；这不是 Mac 真机测试。
+- HTTP / SOCKS5 认证接入口：经各自入口 HTTPS 返回 204。
+- 浏览器可见验证：登录、读取配置、保存并启动、上游测试、停止状态。
+- Windows 登录自启注册/移除和 QEMU 子进程异常退出后自动重启通过；整机重启尚未实测。
+- Mac 安装脚本、Homebrew 初装、HVF、launchd 和睡眠恢复**仍待 Mac 真机验收**。ARM64 镜像构建不等于这些已通过。
+- 云端 CI 需以实际 Actions 结果为准，本地测试不代替云端矩阵或真机验收。
+
+以下为先前版本记录：
+
 验证日期：2026-09-17。以下结果对应本仓库 0.1.0 通用版的本地测试，未声称所有设备兼容。
 
 | 测试 | 结果 | 证据范围 |

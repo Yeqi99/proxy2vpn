@@ -3,7 +3,7 @@ FROM alpine:3.24 AS builder
 ARG MIHOMO_VERSION=v1.19.31
 ARG MIHOMO_ASSET=amd64-compatible
 ARG MIHOMO_SHA256=04cf9f09671704f839ddbee2e93069dc831a4123a75281e725d1d96ab9ac1afc
-RUN apk add --no-cache linux-virt xl2tpd ppp iproute2 iptables curl ca-certificates kmod
+RUN apk add --no-cache linux-virt xl2tpd ppp iproute2 iptables curl ca-certificates kmod wireguard-tools
 RUN curl -fL --retry 3 -o /tmp/mihomo.gz "https://github.com/MetaCubeX/mihomo/releases/download/${MIHOMO_VERSION}/mihomo-linux-${MIHOMO_ASSET}-${MIHOMO_VERSION}.gz" \
     && echo "${MIHOMO_SHA256}  /tmp/mihomo.gz" | sha256sum -c - \
     && gzip -dc /tmp/mihomo.gz > /usr/local/bin/mihomo \

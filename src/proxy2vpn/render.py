@@ -25,7 +25,11 @@ def guest_files(cfg):
                 "nameserver": ["tcp://1.1.1.1:53", "tcp://8.8.8.8:53"],
                 "proxy-server-nameserver": ["1.1.1.1"]},
         "proxies": [upstream], "rules": ["MATCH,upstream"]}
-    return {
+    if 'http' in cfg['protocols'] or 'socks5' in cfg['protocols']:
+        mihomo.update({'allow-lan': True, 'bind-address': '*', 'authentication': [cfg['username']+':'+cfg['password']]})
+        if 'http' in cfg['protocols']: mihomo['port'] = 8080
+        if 'socks5' in cfg['protocols']: mihomo['socks-port'] = 1080
+    files = {
         "etc/mihomo/config.yaml": json.dumps(mihomo, indent=2) + "\n",
         "etc/xl2tpd/xl2tpd.conf": f"""[global]
 port = 1701
@@ -55,8 +59,15 @@ nodefaultroute
 noipdefault
 """,
         "etc/ppp/chap-secrets": f'{cfg["username"]} proxy2vpn "{cfg["password"]}" *\n',
-        "etc/proxy2vpn.env": f"GATEWAY={gateway}\nSUBNET={net}\nUDP_ENABLED={int(proxy['udp'])}\n",
+        "etc/proxy2vpn.env": f"GATEWAY={gateway}\nSUBNET={net}\nUDP_ENABLED={int(proxy['udp'])}\nL2TP_ENABLED={int('l2tp' in cfg['protocols'])}\nWG_ENABLED={int('wireguard' in cfg['protocols'])}\nWG_CLIENT={net[20]}\n",
     }
+    if 'wireguard' in cfg['protocols']:
+        keys = cfg['wireguard']
+        import base64
+        for key in keys.values():
+            if len(base64.b64decode(key, validate=True)) != 32: raise ValueError('Invalid WireGuard key')
+        files['etc/wireguard/wg0.conf'] = f"[Interface]\nPrivateKey = {keys['private']}\nListenPort = 51820\n\n[Peer]\nPublicKey = {keys['client_public']}\nAllowedIPs = {net[20]}/32\n"
+    return files
 
 
 def cpio(files, executable=()):

@@ -4,15 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "proxy2vpn"
-version = "0.1.0"
+version = "0.2.0"
 description = "Share a home computer's proxy through a router-compatible L2TP gateway"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
-dependencies = ["psutil>=6,<8"]
+dependencies = ["psutil>=6,<8", "cryptography>=44,<47"]
 
 [project.scripts]
 proxy2vpn = "proxy2vpn.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+proxy2vpn = ["static/*"]

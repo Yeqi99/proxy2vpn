@@ -79,7 +79,7 @@ ipcp-accept-remote
 ''' }
     overlay = client / "session-initramfs.gz"
     overlay.write_bytes((assets / "initramfs.gz").read_bytes() + gzip.compress(cpio(files, executable=["init"]), mtime=0))
-    test_cfg = dict(cfg, backend_port=cfg["backend_port"] + 1)
+    test_cfg = dict(cfg, backend_port=cfg["backend_port"] + 1, protocols=['l2tp'])
     log_path = client / "guest.log"
     try:
         with log_path.open("wb") as log:

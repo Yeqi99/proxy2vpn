@@ -29,4 +29,4 @@ jobs:
         with:
           python-version: '3.13'
       - run: python scripts/build_guest.py --arch x86_64
-      # Guest binaries are intentionally not uploaded: source-only distribution.
+      # Release guest binaries are assembled separately with corresponding sources.

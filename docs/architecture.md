@@ -61,3 +61,20 @@ the Proactor receive loop. Peer mappings are capped and expire after inactivity.
 - [Mihomo SOCKS5](https://wiki.metacubex.one/en/config/proxies/socks/)
 - [Mihomo HTTP](https://wiki.metacubex.one/en/config/proxies/http/)
 - [Winsock IOCTLs](https://learn.microsoft.com/en-us/windows/win32/winsock/winsock-ioctls)
+
+## Desktop console (0.2)
+
+The loopback console stores the desired running state and supervises the gateway.
+Login startup launches it; closing the page does not stop it. Installers supply
+Python, QEMU and prebuilt guests, so end users do not need Docker.
+
+Source-filtering UDP relays feed L2TP and WireGuard packets into QEMU. Linux PPP
+and WireGuard interfaces route into the existing Mihomo TUN. QEMU also forwards
+authenticated HTTP and TCP-only SOCKS5 inbounds to Mihomo. The WireGuard export
+represents one router peer.
+
+The console uses a per-install token and Host/Origin checks. Status redacts
+secrets; explicit credential exports require authentication. Web configuration
+cannot choose executable paths; installation owns those paths and verifies
+asset hashes. Browser clients should use HTTP due to SOCKS authentication
+limitations in browsers (see Chromium's net/docs/proxy.md).

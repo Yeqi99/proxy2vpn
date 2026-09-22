@@ -14,6 +14,10 @@ def parser():
     p = argparse.ArgumentParser(description="LAN proxy to router-compatible L2TP gateway")
     p.add_argument("--home", type=Path, default=Path.home() / ".proxy2vpn", help="Private state directory")
     commands = p.add_subparsers(dest="command", required=True)
+    console = commands.add_parser('console', help='Local web console and gateway manager')
+    console.add_argument('--assets', type=Path, required=True)
+    console.add_argument('--port', type=int, default=18990)
+    console.add_argument('--open', action='store_true')
     init = commands.add_parser("init", help="Create a configuration; never overwrite existing credentials")
     init.add_argument("--listen-ip")
     init.add_argument("--router-ip")
@@ -35,6 +39,10 @@ def parser():
 
 def execute(args):
     home = args.home.expanduser().resolve()
+    if args.command == 'console':
+        from .console import serve
+        serve(home, args.assets, args.port, args.open)
+        return 0
     if args.command == "init":
         listen = args.listen_ip or input("Computer LAN IPv4 address: ").strip()
         router = args.router_ip or input("Router LAN IPv4 address: ").strip()

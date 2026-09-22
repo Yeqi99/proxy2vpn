@@ -26,9 +26,19 @@ if [ "$UDP_ENABLED" = 0 ]; then
 fi
 iptables -A FORWARD -i ppp+ -o p2v -j ACCEPT
 iptables -A FORWARD -i p2v -o ppp+ -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+if [ "${WG_ENABLED:-0}" = 1 ]; then
+    ip link delete wg0 2>/dev/null || true
+    ip link add wg0 type wireguard
+    wg setconf wg0 /etc/wireguard/wg0.conf
+    ip link set wg0 up
+    ip route replace "$WG_CLIENT/32" dev wg0
+    if [ "$UDP_ENABLED" = 0 ]; then iptables -A FORWARD -i wg0 -p udp -j REJECT --reject-with icmp-port-unreachable; fi
+    iptables -A FORWARD -i wg0 -o p2v -j ACCEPT
+    iptables -A FORWARD -i p2v -o wg0 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+fi
 iptables -t mangle -F FORWARD
 iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
-xl2tpd -D &
-L=$!
-echo 'P2V_READY L2TP gateway active'
+L=$M
+if [ "${L2TP_ENABLED:-1}" = 1 ]; then xl2tpd -D & L=$!; fi
+echo 'P2V_READY gateway active'
 while kill -0 "$M" && kill -0 "$L"; do sleep 3; done

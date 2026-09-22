@@ -19,3 +19,20 @@ Do not commit private configuration, credentials, subscriptions, user IP/MAC
 addresses, guest disks, generated images or personal logs. Example addresses
 use the illustrative `192.168.50.0/24` network. The source-only release packer
 uses Git's tracked files so ignored state is never packaged.
+
+## Release packages
+
+Build both guest architectures with `scripts/build_guest.py`. Run
+`scripts/collect_sources.py` to fetch exact Alpine recipes, verified source
+archives and vendored Mihomo source. GitHub CLI and Docker are required.
+Publish the corresponding-source archive alongside every guest binary release.
+
+Build the wheel with `python -m build --wheel`. Windows packaging also needs
+7-Zip runtime/license under `artifacts/7zip` and complete sources under
+`.proxy2vpn/downloads/7zip-source.tar.xz`. Run `scripts/package_installers.py`
+to assemble platform ZIPs. Review and stage public files, then run
+`scripts/source_release.py` for a source ZIP. Publish checksums for all assets.
+
+`scripts/integration_wireguard.py` uses a disposable client and separate test
+profile to check HTTPS, gateway DNS and external UDP. Preserve platform
+verification limits until the actual OS/hardware is tested.

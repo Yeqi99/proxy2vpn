@@ -51,12 +51,19 @@ def command(cfg, home, assets, accel):
     arch = architecture(cfg)
     arm = arch == "aarch64"
     cpu = "host" if accel == "hvf" else "max"
+    from .protocols import defaults
+    defaults(cfg)
+    forwards = []
+    if 'l2tp' in cfg['protocols']: forwards.append(f'hostfwd=udp:127.0.0.1:{cfg["backend_port"]}-:1701')
+    if 'wireguard' in cfg['protocols']: forwards.append(f'hostfwd=udp:127.0.0.1:{cfg["wireguard_backend_port"]}-:51820')
+    if 'http' in cfg['protocols']: forwards.append(f'hostfwd=tcp:{cfg["listen_ip"]}:{cfg["http_port"]}-:8080')
+    if 'socks5' in cfg['protocols']: forwards.append(f'hostfwd=tcp:{cfg["listen_ip"]}:{cfg["socks_port"]}-:1080')
     args = [binary(cfg), "-name", "Proxy2VPN", "-machine", "virt" if arm else "q35",
             "-accel", accel, "-smp", "2", "-m", str(cfg["memory_mb"]),
             "-display", "none", "-monitor", "none", "-serial", "stdio", "-no-reboot",
             "-kernel", str(assets / "vmlinuz"), "-initrd", str(home / "session-initramfs.gz"),
             "-append", "rdinit=/init console=" + ("ttyAMA0" if arm else "ttyS0") + " panic=5",
-            "-netdev", f'user,id=wan,hostfwd=udp:127.0.0.1:{cfg["backend_port"]}-:1701',
+            "-netdev", 'user,id=wan,' + ','.join(forwards),
             "-device", "virtio-net-pci,netdev=wan"]
     if arm:
         args.extend(["-cpu", cpu])

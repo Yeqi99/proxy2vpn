@@ -2,6 +2,17 @@
 
 Proxy2VPN is a trusted-LAN compatibility bridge, not a public VPN service.
 
+The v0.2 console binds to 127.0.0.1, authenticates API calls with a local random
+token, rejects mismatched Host/Origin, and accepts bounded JSON mutation requests.
+Status/config reads redact passwords and WireGuard keys. Explicit credential
+display and client export require authentication. Do not expose this console
+through a reverse proxy. Local processes running as the same user remain trusted.
+
+WireGuard provides encrypted VPN ingress. HTTP/SOCKS ingress requires the generated
+username/password but does not encrypt the LAN authentication exchange; use only
+a trusted LAN. The SOCKS ingress currently supports TCP only. WireGuard exports
+one client key: do not reuse that file on simultaneously active routers.
+
 - Plain L2TP does not encrypt packets. CHAP authenticates a PPP session but does
   not encrypt it. Use only a trusted LAN. Never forward its UDP port from WAN.
 - The UDP listener permits the configured router and local diagnostic address.

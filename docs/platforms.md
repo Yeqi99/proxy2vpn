@@ -1,5 +1,15 @@
 # 平台与启动
 
+## 0.2 安装包（普通用户）
+
+优先使用发行页 Windows / Mac 安装包，按 README 双击安装。下面的 Python/CLI 流程供开发者手动管理。
+安装版会注册 `Proxy2VPN`（Windows 当前用户 Run）或 `local.proxy2vpn.console`（Mac LaunchAgent）。
+可在网页关闭登录自启；Windows 注册项仅在登录时启动，Mac 由 launchd 管理。
+Mac 没有 Homebrew/CLT 时仍需响应系统提示；本版本没有签名公证的 Mac App。
+
+配置保存在 `~/.proxy2vpn`；Windows 程序默认位于 `%LOCALAPPDATA%/Proxy2VPN`，Mac 位于
+`~/Library/Application Support/Proxy2VPN`。网站只监听 `127.0.0.1:18990`。
+
 ## Windows
 
 安装 Python 3.11+、QEMU，按 README 安装项目依赖并构建 x86_64 镜像。
