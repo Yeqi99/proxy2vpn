@@ -175,9 +175,9 @@ class Handler(BaseHTTPRequestHandler):
                 cfg = config.load(self.manager.home)
                 if 'wireguard' not in cfg['protocols']: raise ValueError('请先启用并保存 WireGuard')
                 return self.reply(200, client_config(cfg).encode(), 'text/plain; charset=utf-8', 'proxy2vpn.conf')
-            allowed = {'/':'index.html','/app.js':'app.js','/style.css':'style.css'}
+            allowed = {'/':'index.html','/app.js':'app.js','/style.css':'style.css','/i18n.js':'i18n.js'}
             if path not in allowed: return self.reply(404, {'error':'Not found'})
-            mime = {'/':'text/html; charset=utf-8','/app.js':'text/javascript; charset=utf-8','/style.css':'text/css; charset=utf-8'}[path]
+            mime = {'/':'text/html; charset=utf-8','/app.js':'text/javascript; charset=utf-8','/style.css':'text/css; charset=utf-8','/i18n.js':'text/javascript; charset=utf-8'}[path]
             self.reply(200, (Path(__file__).parent / 'static' / allowed[path]).read_bytes(), mime)
         except (OSError, ValueError, KeyError) as exc: self.reply(400, {'error':str(exc)})
 
@@ -203,10 +203,20 @@ class Handler(BaseHTTPRequestHandler):
                 autostart.configure(body['enabled'], self.manager.home, self.manager.assets, self.manager.port)
                 return self.reply(200, {'ok':True})
             if path == '/api/test':
-                cfg = config.load(self.manager.home)
+                cfg = config.load(self.manager.home) if (self.manager.home/'config.json').exists() else config.new_config(suggested_ip(), suggested_ip().rsplit('.',1)[0]+'.1', suggested_ip(),7890)
+                if 'proxy' in body:
+                    if not isinstance(body['proxy'],dict): raise ValueError('Invalid proxy')
+                    for key in ('type','host','port','username','password','udp'):
+                        if key in body['proxy']:
+                            if key == 'password' and not body['proxy'][key]: continue
+                            cfg['proxy'][key]=body['proxy'][key]
+                    if body.get('clear_proxy_password'): cfg['proxy']['password']=''
+                    config.validate(cfg)
                 result = doctor.https(cfg)
-                return self.reply(200, {'ok':True, 'message':result})
+                return self.reply(200, {'ok':True, 'code':'test_ok', 'message':result})
             self.reply(404, {'error':'Not found'})
+        except doctor.DiagnosticError as exc:
+            self.reply(400, {'error':str(exc), 'code':exc.code})
         except (OSError, ValueError, KeyError, TypeError, RuntimeError, subprocess.SubprocessError) as exc:
             self.reply(400, {'error':str(exc)})
 

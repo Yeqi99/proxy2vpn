@@ -3,8 +3,15 @@ import json
 import shutil
 import socket
 import subprocess
+import sys
 from . import vm
 from .probe import probe
+
+
+class DiagnosticError(ValueError):
+    def __init__(self, code):
+        self.code = code
+        super().__init__(code)
 
 
 def inspect(cfg, assets, network=False):
@@ -37,7 +44,7 @@ def tcp(host, port):
 def https(cfg):
     curl = shutil.which("curl")
     if not curl:
-        raise OSError("curl is required for --network HTTPS diagnostics")
+        raise DiagnosticError('test_missing_curl')
     p = cfg["proxy"]
     scheme = "socks5h" if p["type"] == "socks5" else "http"
     settings = [f'proxy = "{scheme}://{p["host"]}:{p["port"]}"', 'noproxy = ""']
@@ -47,10 +54,16 @@ def https(cfg):
             raise ValueError("Proxy credentials contain unsupported control characters")
         settings.append("proxy-user = " + json.dumps(credential))
     # Credentials travel through stdin, never argv or the report.
-    response = subprocess.run([curl, "--config", "-", "--silent", "--show-error",
+    try:
+        response = subprocess.run([curl, "--config", "-", "--silent", "--show-error",
         "--max-time", "15", "--output", "NUL" if __import__('os').name == 'nt' else "/dev/null",
         "--write-out", "%{http_code}", "https://www.gstatic.com/generate_204"],
-        input="\n".join(settings), text=True, capture_output=True, timeout=20)
+            input="\n".join(settings), text=True, capture_output=True, timeout=20,
+            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0)
+    except subprocess.TimeoutExpired:
+        raise DiagnosticError('test_timeout') from None
     if response.returncode or response.stdout != "204":
-        raise ValueError(f"HTTPS test failed (curl={response.returncode}, HTTP={response.stdout[:3]})")
+        code = {5:'test_dns',6:'test_dns',7:'test_connect',28:'test_timeout',60:'test_tls',97:'test_auth'}.get(response.returncode,'test_failed')
+        if response.stdout.strip() == '407': code='test_auth'
+        raise DiagnosticError(code)
     return "HTTPS 204 via configured upstream (not through L2TP)"

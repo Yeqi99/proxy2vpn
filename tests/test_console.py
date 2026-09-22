@@ -60,6 +60,13 @@ class ConsoleTests(unittest.TestCase):
             self.assertEqual(code,400);stop.assert_not_called()
     def test_invalid_json_object_rejected(self):self.assertEqual(self.request('/api/control',body=[])[0],400)
     def test_unknown_control_rejected(self):self.assertEqual(self.request('/api/control',body={'action':'execute'})[0],400)
+    def test_proxy_test_uses_unsaved_inputs_without_changing_config(self):
+        from proxy2vpn.config import load
+        with patch('proxy2vpn.console.doctor.https',return_value='ok') as probe:
+            code,_=self.request('/api/test',body={'proxy':{'port':7901}})
+            self.assertEqual(code,200)
+            self.assertEqual(probe.call_args.args[0]['proxy']['port'],7901)
+            self.assertEqual(load(self.home)['proxy']['port'],7890)
     def test_rendered_proxy_auth_is_required(self):
         cfg=json.loads(guest_files(self.cfg)['etc/mihomo/config.yaml'])
         self.assertEqual(cfg['port'],8080);self.assertEqual(cfg['socks-port'],1080)
