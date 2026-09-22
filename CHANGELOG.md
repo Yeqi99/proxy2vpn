@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3
+
+- Decode checksum responses on both Windows PowerShell 5.1 and PowerShell 7.
+
+
 ## 0.2.2
 
 - Add version-pinned, checksum-verifying one-command Windows/macOS bootstraps.

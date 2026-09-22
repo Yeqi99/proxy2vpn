@@ -1,6 +1,6 @@
 # Proxy2VPN
 
-[中文](README.md) · [Download installers](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.2)
+[中文](README.md) · [Download installers](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.3)
 
 Share an existing HTTP CONNECT or SOCKS5 proxy through a router VPN or an authenticated application proxy. Your computer and upstream proxy must stay running.
 
@@ -9,13 +9,13 @@ Share an existing HTTP CONNECT or SOCKS5 proxy through a router VPN or an authen
 Windows x64 — run in PowerShell:
 
 ```powershell
-& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.2/install.ps1')))
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.3/install.ps1')))
 ```
 
 macOS — run in Terminal (Apple Silicon / Intel selected automatically):
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.2/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.3/install.sh)"
 ```
 
 The bootstrap downloads and verifies the platform package, installs dependencies,

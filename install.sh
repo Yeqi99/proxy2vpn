@@ -9,7 +9,7 @@ case "$(uname -m)" in
   x86_64) platform=macos-intel ;;
   *) printf 'Unsupported CPU architecture.\n' >&2; exit 1 ;;
 esac
-version=0.2.2
+version=0.2.3
 base="https://github.com/Yeqi99/proxy2vpn/releases/download/v$version"
 name="proxy2vpn-$version-$platform.zip"
 stage="$(mktemp -d "${TMPDIR:-/tmp}/proxy2vpn.XXXXXXXX")"

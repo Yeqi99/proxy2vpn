@@ -16,7 +16,7 @@ if not files:
     raise SystemExit("No tracked source files; review and stage the source first")
 output = root / "dist"
 output.mkdir(exist_ok=True)
-target = output / "proxy2vpn-0.2.2-source.zip"
+target = output / "proxy2vpn-0.2.3-source.zip"
 with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
     for name in files:
         archive.write(root / name, "proxy2vpn/" + name)

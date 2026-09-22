@@ -11,7 +11,7 @@ $ProgressPreference = 'SilentlyContinue'
 if (-not [Environment]::Is64BitOperatingSystem -or $env:PROCESSOR_ARCHITECTURE -eq 'ARM64') {
     throw 'Proxy2VPN currently supports Windows x64. See the GitHub release for supported platforms.'
 }
-$version = '0.2.2'
+$version = '0.2.3'
 $base = "https://github.com/Yeqi99/proxy2vpn/releases/download/v$version"
 $name = "proxy2vpn-$version-windows-x64.zip"
 $stage = Join-Path ([IO.Path]::GetTempPath()) ("Proxy2VPN-" + [guid]::NewGuid().ToString('N'))
@@ -20,6 +20,7 @@ Write-Host "Downloading Proxy2VPN $version..."
 $archive = Join-Path $stage $name
 Invoke-WebRequest -UseBasicParsing -Uri "$base/$name" -OutFile $archive
 $checksums = (Invoke-WebRequest -UseBasicParsing -Uri "$base/SHA256SUMS").Content
+if ($checksums -is [byte[]]) { $checksums = [Text.Encoding]::UTF8.GetString($checksums) }
 $pattern = '(?m)^([a-fA-F0-9]{64})\s+' + [regex]::Escape($name) + '\r?$'
 $match = [regex]::Match([string]$checksums, $pattern)
 if (-not $match.Success -or (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ine $match.Groups[1].Value) {

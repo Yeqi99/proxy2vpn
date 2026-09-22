@@ -1,6 +1,6 @@
 # Proxy2VPN
 
-[English](README.en.md) · [下载安装包](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.2)
+[English](README.en.md) · [下载安装包](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.3)
 
 **把家里电脑上的代理，变成路由器和浏览器都能使用的接入口。**
 
@@ -11,13 +11,13 @@
 Windows x64：打开 **PowerShell**，复制执行：
 
 ```powershell
-& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.2/install.ps1')))
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.3/install.ps1')))
 ```
 
 Mac：打开 **终端**，复制执行（自动识别 Apple Silicon / Intel）：
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.2/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Yeqi99/proxy2vpn/v0.2.3/install.sh)"
 ```
 
 自动下载并校验安装包、部署依赖、创建快捷方式，完成后直接打开本地 UI。首次安装默认登录自启，已有安装保留用户选择。第一次仍需在网页填写自己的代理地址。
@@ -26,7 +26,7 @@ Mac：打开 **终端**，复制执行（自动识别 Apple Silicon / Intel）�
 
 ## 下载后安装
 
-1. Windows x64：解压 `proxy2vpn-0.2.2-windows-x64.zip`，双击 `Install-Windows.cmd`。Apple Silicon Mac 使用 `macos-arm64.zip`，Intel Mac 使用 `macos-intel.zip`，打开其中 `Install-Mac.command`。
+1. Windows x64：解压 `proxy2vpn-0.2.3-windows-x64.zip`，双击 `Install-Windows.cmd`。Apple Silicon Mac 使用 `macos-arm64.zip`，Intel Mac 使用 `macos-intel.zip`，打开其中 `Install-Mac.command`。
 2. 自动打开的控制台位于 `http://127.0.0.1:18990/`。填写电脑内网 IP、路由器 IP、已有 HTTP/SOCKS5 代理地址和端口，选择接入口，点击「保存并启动」。
 3. 按网页教程配置路由器或浏览器。路由器按设备分流时，排除运行代理的电脑，避免循环。
 
