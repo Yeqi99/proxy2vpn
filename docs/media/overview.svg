@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+<title id="title">Proxy2VPN: an existing proxy, more connected devices</title><desc id="desc">An existing HTTP or SOCKS5 proxy is shared through Proxy2VPN using L2TP, WireGuard, HTTP or SOCKS5. Windows tested, macOS preview.</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f6fbff"/><stop offset="1" stop-color="#dcebf9"/></linearGradient><linearGradient id="accent"><stop stop-color="#25869a"/><stop offset="1" stop-color="#527ed0"/></linearGradient></defs>
+<rect width="1200" height="440" rx="24" fill="url(#bg)"/><path d="M840 0V440M920 0V440M1000 0V440M1080 0V440M0 80H1200M0 160H1200M0 240H1200M0 320H1200" stroke="#739bbc" stroke-opacity=".09"/>
+<g font-family="Segoe UI,Arial,sans-serif"><rect x="48" y="43" width="44" height="44" rx="12" fill="url(#accent)"/><path d="M60 76L79 56M65 56H79V70" fill="none" stroke="white" stroke-width="3"/><text x="107" y="76" font-size="29" font-weight="700" fill="#1f405b">Proxy<tspan fill="#268699">2</tspan>VPN</text>
+<text x="48" y="147" font-size="42" font-weight="700" fill="#1b3b56">Your existing proxy.</text><text x="48" y="197" font-size="42" font-weight="700" fill="#257a96">More connected devices.</text>
+<text x="50" y="235" font-size="17" fill="#547089">One-command install · Local web UI · Optional login startup</text>
+<g transform="translate(48 276)"><rect width="285" height="82" rx="12" fill="white" stroke="#bad0e3"/><text x="20" y="33" font-size="12" fill="#6c849d">INPUT</text><text x="20" y="60" font-size="20" fill="#244761" font-weight="600">HTTP / SOCKS5 proxy</text></g>
+<path d="M350 317H405M396 310L405 317L396 324" stroke="#5e9eb1" stroke-width="2" fill="none"/>
+<g transform="translate(425 276)"><rect width="270" height="82" rx="12" fill="url(#accent)"/><text x="20" y="33" font-size="12" fill="#ddf6fa">LOCAL GATEWAY</text><text x="20" y="60" font-size="23" fill="white" font-weight="600">Proxy2VPN</text></g>
+<path d="M712 317H767M758 310L767 317L758 324" stroke="#5e9eb1" stroke-width="2" fill="none"/>
+<g transform="translate(785 276)"><rect width="367" height="82" rx="12" fill="white" stroke="#bad0e3"/><text x="20" y="33" font-size="12" fill="#6c849d">ROUTER / APPLICATION CLIENTS</text><text x="20" y="59" font-size="18" fill="#244761" font-weight="600">L2TP · WireGuard · HTTP · SOCKS5</text></g>
+<text x="49" y="407" font-size="13" fill="#657e95">Windows tested · macOS preview · Trusted LAN only · Bring your own proxy</text><text x="890" y="407" font-size="13" fill="#3f728e">github.com/Yeqi99/proxy2vpn</text></g></svg>

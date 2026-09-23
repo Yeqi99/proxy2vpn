@@ -1,8 +1,20 @@
 # Proxy2VPN
 
+![Proxy2VPN overview](docs/media/overview.svg)
+
 [中文](README.md) · [Download installers](https://github.com/Yeqi99/proxy2vpn/releases/tag/v0.2.3)
 
 Share an existing HTTP CONNECT or SOCKS5 proxy through a router VPN or an authenticated application proxy. Your computer and upstream proxy must stay running.
+
+## Who is this for?
+
+You already have an HTTP/SOCKS5 proxy and an always-on computer, but your stock router only accepts a VPN client configuration. Proxy2VPN supplies a compatible local gateway so the router can route selected devices through it.
+
+- Keep your existing proxy; no subscription or proxy nodes are provided.
+- No router firmware flashing when its stock firmware supports the required VPN client and device routing.
+- Bilingual local UI, diagnostics, desktop shortcuts and optional login startup.
+
+**Looking for compatibility testers**, especially Apple Silicon Mac and stock routers. Windows has local validation; Mac and specific headset/game experience remain unverified. [Share a test report](https://github.com/Yeqi99/proxy2vpn/issues/new?template=compatibility.yml).
 
 ## One-command installation
 

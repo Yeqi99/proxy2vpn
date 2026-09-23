@@ -1,0 +1,44 @@
+name: Compatibility report / 兼容性反馈
+description: Report a tested platform or router, or an installation/connection problem.
+title: '[Compatibility] '
+body:
+  - type: markdown
+    attributes:
+      value: 'Please omit passwords, subscriptions, private keys, console tokens and identifying network details. 请勿上传密码、订阅、私钥、控制台令牌或个人网络信息。'
+  - type: input
+    id: version
+    attributes:
+      label: Proxy2VPN version / 项目版本
+      placeholder: v0.2.3
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: OS and CPU / 系统与芯片
+      placeholder: Windows 11 x64 / macOS + Apple M4
+    validations:
+      required: true
+  - type: input
+    id: router
+    attributes:
+      label: Router and firmware / 路由器与固件
+      description: Omit if testing a browser/application proxy.
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result / 测试结果
+      options:
+        - Installation failed / 安装失败
+        - Console opens, client cannot connect / 控制台可用但设备无法连接
+        - Client connected, traffic failed / 设备连接但流量失败
+        - Traffic verified / 实际流量通过
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Steps and observations / 操作与现象
+      description: Include inbound protocol, upstream type and what you actually tested. Specify whether TCP, DNS or UDP works. Redact logs before attaching.
+    validations:
+      required: true
